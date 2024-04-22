@@ -81,23 +81,23 @@ def matrix_mul(mtx_1, mtx_2):
                 mtx_3.matrix[i][j] = matrix_mul_sum(mtx_1, mtx_2, i, j, mtx_1.columns)
     return mtx_3
 
-matrix_1 = Matrix(3, 3)
-matrix_1.randomize(-10, 10)
-matrix_2 = Matrix(3, 3)
-matrix_2.randomize(-10, 10)
-matrix_3 = matrix_add(matrix_1, matrix_2)
-matrix_4 = scalar_mul(3, matrix_3)
+# matrix_1 = Matrix(3, 3)
+# matrix_1.randomize(-10, 10)
+# matrix_2 = Matrix(3, 3)
+# matrix_2.randomize(-10, 10)
+# matrix_3 = matrix_add(matrix_1, matrix_2)
+# matrix_4 = scalar_mul(3, matrix_3)
 
-array   = [[3, 4, 5], 
-           [3, 6, 9], 
-           [3, 9, 27]]
+# array   = [[3, 4, 5], 
+#            [3, 6, 9], 
+#            [3, 9, 27]]
 
-array_2 = [[3, 4, 5], 
-           [3, 6, 9], 
-           [3, 9, 27]]
+# array_2 = [[3, 4, 5], 
+#            [3, 6, 9], 
+#            [3, 9, 27]]
 
-matrix_5 = Matrix.array_to_matrix(array, False)
-matrix_6 = Matrix.array_to_matrix(array_2, False)
+# matrix_5 = Matrix.array_to_matrix(array, False)
+# matrix_6 = Matrix.array_to_matrix(array_2, False)
 
 
 # print(matrix_1.size == matrix_2.size)
@@ -106,5 +106,5 @@ matrix_6 = Matrix.array_to_matrix(array_2, False)
 # print(matrix_6)
 
 # print(matrix_mul_sum(matrix_5, matrix_6, 0, 0, 3))
-print(matrix_mul(matrix_5, matrix_6))
+# print(matrix_mul(matrix_5, matrix_6))
 

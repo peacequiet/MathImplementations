@@ -14,10 +14,10 @@ def scalar_mul(s, mtx):
             mtx_return[i][j] = s * mtx_return[i][j]
     return mtx_return
 
-matrix_1 = [[1, 2, 3], [3, 2, 1], [1, 2, 1]]
-matrix_2 = [[1, 2, 3], [3, 2, 1], [1, 2, 1]]
+# matrix_1 = [[1, 2, 3], [3, 2, 1], [1, 2, 1]]
+# matrix_2 = [[1, 2, 3], [3, 2, 1], [1, 2, 1]]
 
-matrix_3 = matrix_add(matrix_1, matrix_2)
-matrix_3 = scalar_mul(3, matrix_3)
+# matrix_3 = matrix_add(matrix_1, matrix_2)
+# matrix_3 = scalar_mul(3, matrix_3)
 
-print(matrix_3)
+# print(matrix_3)

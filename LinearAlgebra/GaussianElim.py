@@ -36,9 +36,15 @@ def const_cancel(matrix, row, column):                          # cancels entrie
                 matrix[i][j] = matrix[i][j] - dummy_row[j]      # subtracts dummy row (mul * R_1) from target row (R_i) and replace target row (R_i) 
     return
 
-matrix = [[-2, -2, 4, 4], 
-          [0, 7, -7, -35], 
-          [0, 1, 7, 11]]
+array = [[1, 1, -3], 
+         [-2, 0, 4], 
+         [6, 2, -16]]
+
+forward_elim(array)
+print(array)
+# matrix = [[1, -2, 1, 4], 
+#           [0, 1, 2, -5],
+#           [1, 1, 3, -7]]
 
 # matrix_2 = [[0, 1, 2, 7 , 9], 
 #           [4, -1, 6, 9, 11], 
@@ -50,5 +56,5 @@ matrix = [[-2, -2, 4, 4],
 # const_cancel(matrix, 0, 0)
 # swap(matrix, 1, 1)
 # const_cancel(matrix, 1, 1)
-forward_elim(matrix)
-print(matrix)
+# forward_elim(matrix)
+# print(matrix)
