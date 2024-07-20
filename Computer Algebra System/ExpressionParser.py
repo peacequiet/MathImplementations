@@ -65,7 +65,7 @@ def infix_to_postfix_expression(expression):
         elif token_type == "rp":
             while op_stack and op_stack[-1] != "(":
                 postfix_list.append(op_stack.pop())
-            op_stack.pop()  # Pop the left parenthesis
+            op_stack.pop()  
             if op_stack and expr_encoding(op_stack[-1]) == "func":
                 postfix_list.append(op_stack.pop())
     while op_stack:
