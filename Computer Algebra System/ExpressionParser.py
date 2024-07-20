@@ -1,20 +1,12 @@
-
-class Node:
-    def __init__(self, coefficient, power):
-        self.coefficient = coefficient
-        self.power = power
-        self.left = None
-        self.right = None
-
-    def __str__(self):
-        return f"Node: {self.value}"
-
 # translates our expression from infix to postfix notation 
 # to prepare for tree construction.
 def infix_to_postfix_expression(expression):   
     postfix_str = ""
     visited_str = ""
     op_stack = []
+    for entry in expression:
+        if ord(entry) == 32:
+            expression.replace(" ", "")
     for entry in expression:
         visited_str = visited_str + entry
         if ord(entry) >= 48 and ord(entry) <= 57:       # numerical operands
@@ -28,7 +20,7 @@ def infix_to_postfix_expression(expression):
         elif ord(entry) == 40:
             op_stack.append(entry)
         elif ord(entry) == 41:
-            postfix_str = right_parens_logic(postfix_str, op_stack, entry)
+            postfix_str = right_parens_logic(postfix_str, op_stack)
     for operation in op_stack:
         postfix_str = postfix_str + operation 
 
@@ -82,4 +74,4 @@ def expr_encoding(entry):
         case _:
             return None
     
-print(infix_to_postfix_expression("(1+x)^e*k-(3-2*4)"))
+print(infix_to_postfix_expression("( 1 + x ) ^ e * k - ( 3 - 2 * 4 )"))
