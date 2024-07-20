@@ -1,8 +1,5 @@
 from ExpressionParser import *
-# TODO: algorithm to turn postfix expression into expression tree 
-# the rough schematic will involve popping each pair of terms
-# into left and right trees and combining them as we come across
-# operations.
+# TODO: algorithm for simplifying expression trees
 
 class Node:
     def __init__(self, token):
