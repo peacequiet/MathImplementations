@@ -1,4 +1,5 @@
 # TODO: make tokenized expression agree with postfix expression
+# TODO: implement Shunting Yard algo
 
 
 # we should only accept trig expressions with parens
@@ -18,7 +19,7 @@ def expression_tokenizer(expression):
             i += 3  # Skip next two characters
         elif expression[i:i+2] == "pi":
             expression_tokens.append("pi")
-            i += 2
+            i += 2  # Skip next character
         elif expression[i] == " ":
             i += 1
         else:
@@ -28,8 +29,6 @@ def expression_tokenizer(expression):
 
 
 tokens = expression_tokenizer("sin(x) + 1 + 2 * tan(pi * x)")
-
-
 # translates our expression from infix to postfix notation 
 # to prepare for tree construction.
 # TODO: instead of returning a string, make it take and return a list of strings
@@ -65,7 +64,7 @@ def operation_logic(postfix_str, op_stack, token):
     if len(op_stack) > 0:
         for operation in op_stack:
             if op_stack.index(operation) > left_parens_index or left_parens_count == 0:
-                if expr_encoding(token) > expr_encoding(operation):
+                if operator_encoding(token) > operator_encoding(operation):
                     postfix_str = postfix_str + op_stack.pop() 
         op_stack.append(token) 
     else:
@@ -87,24 +86,64 @@ def get_left_parens_index(op_stack):
             index = op_stack[::-1].index("(")
     return (len(op_stack) - index - 1, op_stack.count("("))
 
-# special encoding 
-def expr_encoding(token):
-    index = ord(token)
 
-    match ord(token): 
-        case 45:      # subtraction 
-            return 5       
-        case 43:      # addition
-            return 4
-        case 47:      # division
-            return 3
-        case 42:      # multiplication
-            return 2
-        case 61:      # equals sign
+# experimental encoding
+def expr_encoding(token):
+
+    match token: 
+        case token if (token == "sin" 
+                       or token == "cos" 
+                       or token == "tan"):
+            return "func"
+        case "pi":
+            return "num"
+        case token if (ord(token) >= 49 and ord(token) <= 57
+                       or ord(token) >= 65 and ord(token) <= 90
+                       or ord(token) >= 97 and ord(token) <= 122):
+            return "num"
+        case token if token == "(":
+            return "lp"
+        case token if token == ")":
+            return "rp"
+        case token if ord(token) == 45:      # subtraction 
+            return "operator"       
+        case token if ord(token) == 43:      # addition
+            return "operator"       
+        case token if ord(token) == 47:      # division
+            return "operator"       
+        case token if ord(token) == 42:      # multiplication
+            return "operator"
+        case token if ord(token) == 61:      # equals sign
+            return "operator"
+        case token if ord(token) == 94:      # exponentiation
+            return "operator"
+        case _:
+            return None
+
+# special encoding 
+# TODO : make encoding compatible with tokens instead of single chars
+def operator_encoding(token):
+    match token: 
+        case token if (token == "sin" 
+                       or token == "cos" 
+                       or token == "tan"):
             return 0
-        case 94:      # exponentiation
+        case token if ord(token) == 45:      # subtraction 
+            return 5       
+        case token if ord(token) == 43:      # addition
+            return 4
+        case token if ord(token) == 47:      # division
+            return 3
+        case token if ord(token) == 42:      # multiplication
+            return 2
+        case token if ord(token) == 61:      # equals sign
+            return 0
+        case token if ord(token) == 94:      # exponentiation
             return -1
         case _:
             return None
     
+for token in tokens:
+    print(expr_encoding(token))
+
 # print(infix_to_postfix_expression("( 1 + x ) ^ e * k - ( 3 - 2 * 4 )"))
