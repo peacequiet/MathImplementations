@@ -24,15 +24,9 @@ class Tree:
     def __str__(self):
         return f"Root: {self.root.token}"
     
-node1 = Node("3")
-node2 = Node("2")
-node3 = Node("3")
-node2.left = node1
-node2.right = node3
-
-# node2.in_order()
 
 # transforms expression into tree
+# going to move to new file
 def expression_to_tree(expression):
     token_stack = []
     for token in expression:
