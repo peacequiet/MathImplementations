@@ -1,5 +1,38 @@
+# TODO: make tokenized expression agree with postfix expression
+
+
+# we should only accept trig expressions with parens
+# tokenizer online
+def expression_tokenizer(expression):
+    expression_tokens = []
+    i = 0
+    while i < len(expression):
+        if expression[i:i+3] == "sin":
+            expression_tokens.append("sin")
+            i += 3  # Skip next two characters
+        elif expression[i:i+3] == "cos":
+            expression_tokens.append("cos")
+            i += 3  # Skip next two characters
+        elif expression[i:i+3] == "tan":
+            expression_tokens.append("tan")
+            i += 3  # Skip next two characters
+        elif expression[i:i+2] == "pi":
+            expression_tokens.append("pi")
+            i += 2
+        elif expression[i] == " ":
+            i += 1
+        else:
+            expression_tokens.append(expression[i])
+            i += 1
+    return expression_tokens
+
+
+tokens = expression_tokenizer("sin(x) + 1 + 2 * tan(pi * x)")
+
+
 # translates our expression from infix to postfix notation 
 # to prepare for tree construction.
+# TODO: instead of returning a string, make it take and return a list of strings
 def infix_to_postfix_expression(expression):   
     postfix_str = ""
     visited_str = ""
