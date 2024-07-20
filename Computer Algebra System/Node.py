@@ -30,8 +30,12 @@ class Tree:
 def expression_to_tree(expression):
     token_stack = []
     for token in expression:
-        if expr_encoding(token) == None:
+        if expr_encoding(token) == "num":
             node = Node(token)
+            token_stack.append(node)
+        elif expr_encoding(token) == "func":
+            node = Node(token)
+            node.right = token_stack.pop()
             token_stack.append(node)
         else:
             node = Node(token)
@@ -41,6 +45,8 @@ def expression_to_tree(expression):
 
     return token_stack[0]
 
-expression_to_tree(infix_to_postfix_expression("( 1 + 2 ) ^ 3 * 7 - ( 3 - 2 * 4 )")).in_order()
+tokens = expression_tokenizer("sin(x) + 1 + 2 * tan(pi * x)")
+postfix_expression = infix_to_postfix_expression(tokens)
+expression_to_tree(postfix_expression).in_order()
     
 
