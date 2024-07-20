@@ -4,22 +4,22 @@ def infix_to_postfix_expression(expression):
     postfix_str = ""
     visited_str = ""
     op_stack = []
-    for entry in expression:
-        if ord(entry) == 32:
+    for token in expression:
+        if ord(token) == 32:
             expression.replace(" ", "")
-    for entry in expression:
-        visited_str = visited_str + entry
-        if ord(entry) >= 48 and ord(entry) <= 57:       # numerical operands
-            postfix_str = postfix_str + entry
-        elif ord(entry) >= 65 and ord(entry) <= 90:     # variable operands
-            postfix_str = postfix_str + entry
-        elif ord(entry) >= 97 and ord(entry) <= 122:    # variable operands contd
-            postfix_str = postfix_str + entry
-        elif ord(entry) != 32 and ord(entry) != 40 and ord(entry) != 41:             
-            postfix_str = operation_logic(postfix_str, op_stack, entry)
-        elif ord(entry) == 40:
-            op_stack.append(entry)
-        elif ord(entry) == 41:
+    for token in expression:
+        visited_str = visited_str + token
+        if ord(token) >= 48 and ord(token) <= 57:       # numerical operands
+            postfix_str = postfix_str + token
+        elif ord(token) >= 65 and ord(token) <= 90:     # variable operands
+            postfix_str = postfix_str + token
+        elif ord(token) >= 97 and ord(token) <= 122:    # variable operands contd
+            postfix_str = postfix_str + token
+        elif ord(token) != 32 and ord(token) != 40 and ord(token) != 41:             
+            postfix_str = operation_logic(postfix_str, op_stack, token)
+        elif ord(token) == 40:
+            op_stack.append(token)
+        elif ord(token) == 41:
             postfix_str = right_parens_logic(postfix_str, op_stack)
     for operation in op_stack:
         postfix_str = postfix_str + operation 
@@ -27,16 +27,16 @@ def infix_to_postfix_expression(expression):
     return postfix_str
 
 # decides what to do with operations encountered during traversal
-def operation_logic(postfix_str, op_stack, entry): 
+def operation_logic(postfix_str, op_stack, token): 
     left_parens_index, left_parens_count = get_left_parens_index(op_stack)                      
     if len(op_stack) > 0:
         for operation in op_stack:
             if op_stack.index(operation) > left_parens_index or left_parens_count == 0:
-                if expr_encoding(entry) > expr_encoding(operation):
+                if expr_encoding(token) > expr_encoding(operation):
                     postfix_str = postfix_str + op_stack.pop() 
-        op_stack.append(entry) 
+        op_stack.append(token) 
     else:
-        op_stack.append(entry)
+        op_stack.append(token)
     return postfix_str
 
 # logic that handles right parentheses - empties stack from right to left
@@ -55,10 +55,10 @@ def get_left_parens_index(op_stack):
     return (len(op_stack) - index - 1, op_stack.count("("))
 
 # special encoding 
-def expr_encoding(entry):
-    index = ord(entry)
+def expr_encoding(token):
+    index = ord(token)
 
-    match ord(entry): 
+    match ord(token): 
         case 45:      # subtraction 
             return 5       
         case 43:      # addition
@@ -74,4 +74,4 @@ def expr_encoding(entry):
         case _:
             return None
     
-print(infix_to_postfix_expression("( 1 + x ) ^ e * k - ( 3 - 2 * 4 )"))
+# print(infix_to_postfix_expression("( 1 + x ) ^ e * k - ( 3 - 2 * 4 )"))
