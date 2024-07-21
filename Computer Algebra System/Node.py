@@ -56,10 +56,15 @@ def expression_to_tree(expression):
 
     return token_stack[0]
 
-# def simp_neg(node):
-#     if node == None:
-#         return
-#     if node.value == "-":
+def simp_neg(node):
+    if node == None:
+        return
+    elif node.value == "~":
+        node.left = Node("-1")
+        node.value = "*"
+
+    simp_neg(node.left)
+    simp_neg(node.right)
 
         
 
