@@ -1,11 +1,20 @@
 # Tokenizes the expression into numbers, operators, functions, and parentheses
+
+# TODO: negative terms
+# we can do this by creating another if statement enclosing the current one
+# and adjusting string ranges
 def expression_tokenizer(expression):
     expression_tokens = []
     i = 0
+    expression.replace(" ", "")
     while i < len(expression):
         if expression[i:i+3] in ("sin", "cos", "tan"):
             expression_tokens.append(expression[i:i+3])
             i += 3
+        elif (expression[i] == "-" 
+              and (expression[i-1] in "+-*/^(" or i == 0)):
+            expression_tokens.append("~")               # replace unary subtraction with squiggly operator
+            i += 1 
         elif expression[i:i+2] == "pi":
             expression_tokens.append("pi")
             i += 2
@@ -28,7 +37,7 @@ def expr_encoding(token):
         return "lp"
     elif token == ")":
         return "rp"
-    elif token in "+-*/^":
+    elif token in "+-*/^~":
         return "op"
     else:
         return None
@@ -41,7 +50,7 @@ def operator_encoding(token):
         return 3
     elif token in "*/":
         return 2
-    elif token in "+-":
+    elif token in "+-~":
         return 1
     else:
         return 0
@@ -73,6 +82,7 @@ def infix_to_postfix_expression(expression):
     return postfix_list
 
 # Examples
-tokens = expression_tokenizer("sin(x) + 1 + 2 * tan(pi * x)")
+tokens = expression_tokenizer("-sin(x) + 1 + 2 * tan(pi * x)")
 postfix_expression = infix_to_postfix_expression(tokens)
+print(tokens)
 print(postfix_expression)

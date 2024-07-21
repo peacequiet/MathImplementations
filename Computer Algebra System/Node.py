@@ -17,12 +17,19 @@ class Node:
         print(str(node))
         Node.in_order(node.right)
 
-class Tree:
-    def __init__(self, root):
-        self.root = root
-    
-    def __str__(self):
-        return f"Root: {self.root.token}"
+    def post_order(node):
+        if node == None:
+            return 
+        Node.in_order(node.left)
+        Node.in_order(node.right)
+        print(str(node))
+
+    def pre_order(node):
+        if node == None:
+            return 
+        Node.in_order(node.left)
+        Node.in_order(node.right)
+        print(str(node))
     
 
 # transforms expression into tree
@@ -37,6 +44,10 @@ def expression_to_tree(expression):
             node = Node(token)
             node.right = token_stack.pop()
             token_stack.append(node)
+        elif token == "~":
+            node = Node(token)
+            node.right = token_stack.pop()
+            token_stack.append(node)
         else:
             node = Node(token)
             node.right = token_stack.pop()
@@ -45,8 +56,17 @@ def expression_to_tree(expression):
 
     return token_stack[0]
 
-tokens = expression_tokenizer("sin(x) + 1 + 2 * tan(pi * x)")
+# def simp_neg(node):
+#     if node == None:
+#         return
+#     if node.value == "-":
+
+        
+
+tokens = expression_tokenizer("-sin(x) + 1 - 2 * tan(pi * x)")
 postfix_expression = infix_to_postfix_expression(tokens)
-expression_to_tree(postfix_expression).in_order()
+tree = expression_to_tree(postfix_expression)
+tree.in_order()
+print()
     
 
