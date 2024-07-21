@@ -46,7 +46,7 @@ def operator_encoding(token):
     else:
         return 0
 
-# Converts an infix expression to a postfix expression using Shunting-Yard
+# Converts an infix expression to a postfix expression using Shunting Yard
 def infix_to_postfix_expression(expression):
     postfix_list = []
     op_stack = []
