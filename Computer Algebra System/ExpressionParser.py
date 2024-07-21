@@ -34,7 +34,7 @@ def expr_encoding(token):
         return "num"
     elif token.isalnum():
         return "num"
-    elif token[0] == "-":
+    elif len(token) == 2 and token[0] == "-":
         if token[1].isnumeric():
             return "num"
     elif token == "(":
@@ -86,7 +86,7 @@ def infix_to_postfix_expression(expression):
     return postfix_list
 
 # Examples
-tokens = expression_tokenizer("-sin(x) + -1 + 2 * tan(pi * x)")
-postfix_expression = infix_to_postfix_expression(tokens)
-print(tokens)
-print(postfix_expression)
+# tokens = expression_tokenizer("-sin(x) + -1 + 2 * tan(pi * x)")
+# postfix_expression = infix_to_postfix_expression(tokens)
+# print(tokens)
+# print(postfix_expression)

@@ -59,9 +59,15 @@ def expression_to_tree(expression):
 def simp_neg(node):
     if node == None:
         return
-    elif node.value == "~":
+    elif node.token == "~":
         node.left = Node("-1")
-        node.value = "*"
+        node.token = "*"
+    elif node.token == "-":
+        node.token = "+"
+        temp = node.right
+        node.right = Node("*")
+        node.right.left = Node("-1")
+        node.right.right = temp
 
     simp_neg(node.left)
     simp_neg(node.right)
@@ -69,9 +75,14 @@ def simp_neg(node):
         
 
 tokens = expression_tokenizer("-sin(x) + 1 - 2 * tan(pi * x)")
-postfix_expression = infix_to_postfix_expression(tokens)
-tree = expression_to_tree(postfix_expression)
-tree.in_order()
+print(tokens)
 print()
+postfix_expression = infix_to_postfix_expression(tokens)
+print(postfix_expression)
+print()
+tree = expression_to_tree(postfix_expression)
+simp_neg(tree)
+tree.in_order()
+
     
 
