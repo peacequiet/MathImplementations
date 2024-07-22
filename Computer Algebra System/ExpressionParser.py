@@ -14,13 +14,13 @@ def expression_tokenizer(expression):
               and (expression[i-1] in "+-*/^(" or i == 0)):
             expression_tokens.append("~")                               # replace unary negation with squiggly operator
             i += 1 
+        elif expression[i:i+2] == "pi":
+            expression_tokens.append("pi")
+            i += 2
         elif (expression[i] == "-" 
               and expression[i+1].isnumeric()
               and not expression[i-1].isalnum()):
             i = scan_for_digits(i, 1, length, expression, expression_tokens)
-        elif expression[i:i+2] == "pi":
-            expression_tokens.append("pi")
-            i += 2
         elif expression[i].isnumeric():
             i = scan_for_digits(i, 0, length, expression, expression_tokens)
         elif expression[i] == " ":
@@ -103,6 +103,7 @@ def expression_parser(expression):
     postfix_expression = infix_to_postfix_expression(tokens)
     return postfix_expression
 
+#catches too many parentheses
 def parens_error_catcher(tokens):
     lp_num = tokens.count("(")
     rp_num = tokens.count(")")

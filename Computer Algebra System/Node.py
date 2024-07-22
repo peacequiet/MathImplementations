@@ -1,9 +1,9 @@
 from ExpressionParser import *
-# TODO: algorithm(s) for simplifying expression trees
-# TODO: GUI
-# TODO: unit tests
-# TODO: cleanup, separation of concerns
-# TODO: try-catch
+# TODO: algorithm(s) for simplifying expression trees - 40% complete
+# TODO: GUI - 0% complete
+# TODO: unit tests - 0% complete
+# TODO: cleanup, separation of concerns - 10% complete
+# TODO: try-except - partially complete
 
 class Node:
     def __init__(self, token):
@@ -111,13 +111,67 @@ def simp_like_terms(node):
 
     return
 
-# TODO: Division simplification
+# turns division into mul expressions
+def simp_dvd(node):
+    if node.token == "/":
+        if node.children[0].token == "/":
+            simp_dvd_logic(node, 0)
+        if node.children[1].token == "/":
+            simp_dvd_logic(node, 1)
+    elif node.token == "*":
+        if node.children[1].token == "/":
+            simp_mul_dvd_logic(node)
+    for child in node.children:
+        simp_dvd(child)
+
+    return
+
+def simp_mul_dvd_logic(node):
+    node_a = node.children[0]
+    node_b = node.children[1].children[0]
+    node_c = node.children[1].children[1]
+    new_mul = node.children[1]
+    node.children[1].children.clear()
+    node.children.clear()
+    new_mul.append(node_a)
+    new_mul.append(node_b)
+    node.children.clear()
+    node.append(new_mul)
+    node.append(node_c)
+    node.token = "/"
+
+def simp_dvd_logic(node, index):
+    div_child_of_node = node.children[index]
+    other_child_of_node = node.children[1-index]
+    left_child_of_div = div_child_of_node.children[0]
+    right_child_of_div = div_child_of_node.children[1]
+
+    node.children = [left_child_of_div if index == 0 else div_child_of_node, 
+                     div_child_of_node if index == 0 else right_child_of_div]
+    div_child_of_node.children = [right_child_of_div if index == 0 else other_child_of_node,
+                                  other_child_of_node if index == 0 else left_child_of_div]
+    div_child_of_node.token = "*"
+
+def simp_fold_constants(node):
+    sum = 0
+    if node == "+":
+        i = 0
+        while i < len(node.children):
+            child = node.children[i]
+            if expr_encoding(child.token) == "num":
+                sum += int(child.token)
+                node.children.pop(i)
+            else:
+                i += 1
+    
+
 # TODO: Folding constants simp
 # TODO: Canonical order simp
 # TODO: Evaluate/full simp
 # TODO: Advanced operations
 
-tokens = expression_tokenizer("-sin(x) * 1 * 20 * tan(pi * x)")
+# tokens = expression_tokenizer("-sin(x) * 1 * 20 * tan(pi * x)")
+tokens = expression_tokenizer("2 + 2 + 2")
 print(tokens)
 print()
 postfix_expression = infix_to_postfix_expression(tokens)
@@ -127,6 +181,7 @@ tree = expression_to_tree(postfix_expression)
 simp_neg(tree)
 simp_level_operators(tree)
 # # simp_like_terms(tree)
+simp_dvd(tree)
 tree.post_order()
 
     
