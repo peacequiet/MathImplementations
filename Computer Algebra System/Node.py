@@ -39,10 +39,17 @@ def expression_to_tree(expression):
             node.children.append(None)
             node.children.append(token_stack.pop())
             token_stack.append(node)
+        elif token == "^":
+            node = Node(token)
+            node.children.append(None)
+            node.children.append(token_stack.pop())
+            node.children[0] = token_stack.pop()
+            token_stack.append(node)
         else:
             node = Node(token)
+            node.children.append(None)
             node.children.append(token_stack.pop())
-            node.children.append(token_stack.pop())
+            node.children[0] = token_stack.pop()
             token_stack.append(node)
 
     return token_stack[0]
@@ -84,8 +91,26 @@ def simp_level_operators(node):
 
     return 
 
+# combine like terms
+def simp_like_terms(node):
+    if node.token == "*":
+        for i, child1 in enumerate(node.children):
+            if child1.token == "^":
+                for j, child2 in enumerate(node.children):
+                    if i != j and child2.token == "^" and child2.children[0].token == child1.children[0].token: 
+                        node.children.pop(j)        # pops child 2
+                        temp = node.children[i].children[1]
+                        node.children[i].children[1] = Node("+")
+                        node.children[i].children[1].children.append(temp)
+                        node.children[i].children[1].children.append(child2)
+
+    return
+
+# TODO: Division simplification
+# def simp_division(node):
+
 # tokens = expression_tokenizer("-sin(x) + 1 - 2 * tan(pi * x)")
-tokens = expression_tokenizer("2 + 2 + 2 * 2 * 2 * 2 * 2")
+tokens = expression_tokenizer("2 ^ 7 * 2 ^ 3")
 print(tokens)
 print()
 postfix_expression = infix_to_postfix_expression(tokens)
@@ -95,7 +120,8 @@ tree = expression_to_tree(postfix_expression)
 # tree.post_order()
 simp_neg(tree)
 simp_level_operators(tree)
-tree.pre_order()
+simp_like_terms(tree)
+tree.post_order()
 
     
 
