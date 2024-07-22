@@ -1,5 +1,6 @@
 from ExpressionParser import *
 # TODO: algorithm for simplifying expression trees
+#   Sub-TODO: refactor node to have a list of children
 
 class Node:
     def __init__(self, token):
