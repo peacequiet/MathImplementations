@@ -1,6 +1,9 @@
 from ExpressionParser import *
 # TODO: algorithm(s) for simplifying expression trees
+# TODO: GUI
+# TODO: unit tests
 # TODO: cleanup, separation of concerns
+# TODO: try-catch
 
 class Node:
     def __init__(self, token):
@@ -107,6 +110,10 @@ def simp_like_terms(node):
     return
 
 # TODO: Division simplification
+# TODO: Folding constants simp
+# TODO: Canonical order simp
+# TODO: Evaluate/full simp
+# TODO: Advanced operations
 # def simp_division(node):
 
 # tokens = expression_tokenizer("-sin(x) + 1 - 2 * tan(pi * x)")
