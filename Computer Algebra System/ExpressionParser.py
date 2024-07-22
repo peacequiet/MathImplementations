@@ -4,21 +4,23 @@
 def expression_tokenizer(expression):
     expression_tokens = []
     i = 0
-    expression.replace(" ", "")
-    while i < len(expression):
+    expression = expression.replace(" ", "")
+    length = len(expression)
+    while i < length:
         if expression[i:i+3] in ("sin", "cos", "tan"):
             expression_tokens.append(expression[i:i+3])
             i += 3
         elif (expression[i] == "-" and expression[i+1].isnumeric()):
-            expression_tokens.append(expression[i:i+2])
-            i += 2
+            i = scan_for_digits(i, 1, length, expression, expression_tokens)
         elif (expression[i] == "-" 
               and (expression[i-1] in "+-*/^(" or i == 0)):
-            expression_tokens.append("~")               # replace unary subtraction with squiggly operator
+            expression_tokens.append("~")                               # replace unary negation with squiggly operator
             i += 1 
         elif expression[i:i+2] == "pi":
             expression_tokens.append("pi")
             i += 2
+        elif expression[i].isnumeric():
+            i = scan_for_digits(i, 0, length, expression, expression_tokens)
         elif expression[i] == " ":
             i += 1
         else:
@@ -26,15 +28,21 @@ def expression_tokenizer(expression):
             i += 1
     return expression_tokens
 
+def scan_for_digits(i, j, length, expression, expression_tokens):
+    while i + j < length and expression[i+j].isnumeric():
+        j +=1
+    expression_tokens.append(expression[i:i+j])
+    return (i + j)
+
 # Encodes the expression tokens into categories
 def expr_encoding(token):
     if token in ("sin", "cos", "tan"):
         return "func"
     elif token == "pi":
         return "num"
-    elif token.isalnum():
+    elif token[0].isalnum():
         return "num"
-    elif len(token) == 2 and token[0] == "-":
+    elif len(token) >= 2 and token[0] == "-":
         if token[1].isnumeric():
             return "num"
     elif token == "(":
@@ -98,7 +106,8 @@ def parens_error_catcher(tokens):
     if (lp_num + rp_num) % 2 != 0:
         raise Exception("Sorry, your expression has mismatched parentheses.")
 
-tokens = expression_tokenizer("` + 2")
+tokens = expression_tokenizer("200 + -30")
 postfix_expression = infix_to_postfix_expression(tokens)
-parens_error_catcher(tokens)
+# parens_error_catcher(tokens)
 print(tokens)
+print(postfix_expression)
