@@ -30,6 +30,7 @@ def expression_tokenizer(expression):
             i += 1
     return expression_tokens
 
+# gets digits of a multidigit number
 def scan_for_digits(i, j, length, expression, expression_tokens):
     while i + j < length and expression[i+j].isnumeric():
         j +=1
@@ -95,12 +96,12 @@ def infix_to_postfix_expression(expression):
         postfix_list.append(op_stack.pop())
     return postfix_list
 
-# Examples
-# tokens = expression_tokenizer("-sin(x) + -1 + 2 * tan(pi * x)")
-# postfix_expression = infix_to_postfix_expression(tokens)
-# print(tokens)
-# print(postfix_expression)
-
+# takes infix string expression, converts to postfix
+def expression_parser(expression):
+    tokens = expression_tokenizer(expression)
+    parens_error_catcher(tokens)
+    postfix_expression = infix_to_postfix_expression(tokens)
+    return postfix_expression
 
 def parens_error_catcher(tokens):
     lp_num = tokens.count("(")
@@ -108,6 +109,8 @@ def parens_error_catcher(tokens):
     if (lp_num + rp_num) % 2 != 0:
         raise Exception("Sorry, your expression has mismatched parentheses.")
 
+# examples
+#print(expression_parser("2 + 6 ^ 70"))
 # tokens = expression_tokenizer("-sin(x) + 1 - 20 * tan(pi * x)")
 # postfix_expression = infix_to_postfix_expression(tokens)
 # # parens_error_catcher(tokens)

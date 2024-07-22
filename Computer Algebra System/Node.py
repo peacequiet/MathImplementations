@@ -43,19 +43,18 @@ def expression_to_tree(expression):
             node.children.append(token_stack.pop())
             token_stack.append(node)
         elif token == "^":
-            node = Node(token)
-            node.children.append(None)
-            node.children.append(token_stack.pop())
-            node.children[0] = token_stack.pop()
-            token_stack.append(node)
+            tree_helper(token, token_stack)
         else:
-            node = Node(token)
-            node.children.append(None)
-            node.children.append(token_stack.pop())
-            node.children[0] = token_stack.pop()
-            token_stack.append(node)
+            tree_helper(token, token_stack)
 
     return token_stack[0]
+
+def tree_helper(token, token_stack):
+    node = Node(token)
+    node.children.append(None)
+    node.children.append(token_stack.pop())
+    node.children[0] = token_stack.pop()
+    token_stack.append(node)
 
 # transforms neg and sub into mul by -1
 def simp_neg(node):
@@ -78,21 +77,24 @@ def simp_neg(node):
 # simplifies addition operators, merges them and sends their children to a single node
 def simp_level_operators(node):
     if node.token == "+":
-        for i, child in enumerate(node.children):
-            if child.token == "+":
-                node.children.pop(i)
-                node.children += child.children
-                child.children.clear()
+        level_operators_logic(node)
     if node.token == "*":
-        for i, child in enumerate(node.children):
-            if child.token == "*":
-                node.children.pop(i)
-                node.children += child.children
-                child.children.clear()
+        level_operators_logic(node)
     for child in node.children:
         simp_level_operators(child)
 
-    return 
+    return
+
+def level_operators_logic(node):
+    i = 0
+    while i < len(node.children):
+        child = node.children[i]
+        if child.token == node.token:
+            node.children.pop(i)
+            node.children += child.children
+            child.children.clear()
+        else:
+            i += 1
 
 # combine like terms
 def simp_like_terms(node):
@@ -115,18 +117,16 @@ def simp_like_terms(node):
 # TODO: Evaluate/full simp
 # TODO: Advanced operations
 
-tokens = expression_tokenizer("-sin(x) + 1 - 20 * tan(pi * x)")
-# tokens = expression_tokenizer("2 ^ 7 * 2 ^ 3")
+tokens = expression_tokenizer("-sin(x) * 1 * 20 * tan(pi * x)")
 print(tokens)
 print()
 postfix_expression = infix_to_postfix_expression(tokens)
 print(postfix_expression)
 print()
 tree = expression_to_tree(postfix_expression)
-# tree.post_order()
-# simp_neg(tree)
-# simp_level_operators(tree)
-# simp_like_terms(tree)
+simp_neg(tree)
+simp_level_operators(tree)
+# # simp_like_terms(tree)
 tree.post_order()
 
     
