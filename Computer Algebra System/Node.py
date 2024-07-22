@@ -114,10 +114,9 @@ def simp_like_terms(node):
 # TODO: Canonical order simp
 # TODO: Evaluate/full simp
 # TODO: Advanced operations
-# def simp_division(node):
 
-# tokens = expression_tokenizer("-sin(x) + 1 - 2 * tan(pi * x)")
-tokens = expression_tokenizer("2 ^ 7 * 2 ^ 3")
+tokens = expression_tokenizer("-sin(x) + 1 - 20 * tan(pi * x)")
+# tokens = expression_tokenizer("2 ^ 7 * 2 ^ 3")
 print(tokens)
 print()
 postfix_expression = infix_to_postfix_expression(tokens)
@@ -125,9 +124,9 @@ print(postfix_expression)
 print()
 tree = expression_to_tree(postfix_expression)
 # tree.post_order()
-simp_neg(tree)
-simp_level_operators(tree)
-simp_like_terms(tree)
+# simp_neg(tree)
+# simp_level_operators(tree)
+# simp_like_terms(tree)
 tree.post_order()
 
     

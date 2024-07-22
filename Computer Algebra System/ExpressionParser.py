@@ -10,12 +10,14 @@ def expression_tokenizer(expression):
         if expression[i:i+3] in ("sin", "cos", "tan"):
             expression_tokens.append(expression[i:i+3])
             i += 3
-        elif (expression[i] == "-" and expression[i+1].isnumeric()):
-            i = scan_for_digits(i, 1, length, expression, expression_tokens)
         elif (expression[i] == "-" 
               and (expression[i-1] in "+-*/^(" or i == 0)):
             expression_tokens.append("~")                               # replace unary negation with squiggly operator
             i += 1 
+        elif (expression[i] == "-" 
+              and expression[i+1].isnumeric()
+              and not expression[i-1].isalnum()):
+            i = scan_for_digits(i, 1, length, expression, expression_tokens)
         elif expression[i:i+2] == "pi":
             expression_tokens.append("pi")
             i += 2
@@ -106,8 +108,8 @@ def parens_error_catcher(tokens):
     if (lp_num + rp_num) % 2 != 0:
         raise Exception("Sorry, your expression has mismatched parentheses.")
 
-tokens = expression_tokenizer("200 + -30")
-postfix_expression = infix_to_postfix_expression(tokens)
-# parens_error_catcher(tokens)
-print(tokens)
-print(postfix_expression)
+# tokens = expression_tokenizer("-sin(x) + 1 - 20 * tan(pi * x)")
+# postfix_expression = infix_to_postfix_expression(tokens)
+# # parens_error_catcher(tokens)
+# print(tokens)
+# print(postfix_expression)
