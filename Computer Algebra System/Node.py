@@ -62,9 +62,30 @@ def simp_neg(node):
         node.children[1].children.append(temp)
     for child in node.children:
         simp_neg(child)
+
+    return
+
+# simplifies addition operators, merges them and sends their children to a single node
+def simp_level_operators(node):
+    if node.token == "+":
+        for i, child in enumerate(node.children):
+            if child.token == "+":
+                node.children.pop(i)
+                node.children += child.children
+                child.children.clear()
+    if node.token == "*":
+        for i, child in enumerate(node.children):
+            if child.token == "*":
+                node.children.pop(i)
+                node.children += child.children
+                child.children.clear()
+    for child in node.children:
+        simp_level_operators(child)
+
     return 
 
-tokens = expression_tokenizer("-sin(x) + 1 - 2 * tan(pi * x)")
+# tokens = expression_tokenizer("-sin(x) + 1 - 2 * tan(pi * x)")
+tokens = expression_tokenizer("2 + 2 + 2 * 2 * 2 * 2 * 2")
 print(tokens)
 print()
 postfix_expression = infix_to_postfix_expression(tokens)
@@ -73,6 +94,7 @@ print()
 tree = expression_to_tree(postfix_expression)
 # tree.post_order()
 simp_neg(tree)
+simp_level_operators(tree)
 tree.pre_order()
 
     
