@@ -5,33 +5,22 @@ from ExpressionParser import *
 class Node:
     def __init__(self, token):
         self.token = token 
-        self.left = None
-        self.right = None
+        self.children = []
 
     def __str__(self):
         return f"Node: {self.token}"
     
-    def in_order(node):
-        if node == None:
-            return 
-        Node.in_order(node.left)
-        print(str(node))
-        Node.in_order(node.right)
-
     def post_order(node):
-        if node == None:
-            return 
-        Node.in_order(node.left)
-        Node.in_order(node.right)
+        for child in node.children:
+            if child is not None:
+                Node.post_order(child)
         print(str(node))
 
     def pre_order(node):
-        if node == None:
-            return 
-        Node.in_order(node.left)
-        Node.in_order(node.right)
         print(str(node))
-    
+        for child in node.children:
+            if child is not None:
+                Node.pre_order(child)    
 
 # transforms expression into tree
 # going to move to new file (?)
@@ -43,16 +32,17 @@ def expression_to_tree(expression):
             token_stack.append(node)
         elif expr_encoding(token) == "func":
             node = Node(token)
-            node.right = token_stack.pop()
+            node.children.append(token_stack.pop())
             token_stack.append(node)
         elif token == "~":
             node = Node(token)
-            node.right = token_stack.pop()
+            node.children.append(None)
+            node.children.append(token_stack.pop())
             token_stack.append(node)
         else:
             node = Node(token)
-            node.right = token_stack.pop()
-            node.left = token_stack.pop()
+            node.children.append(token_stack.pop())
+            node.children.append(token_stack.pop())
             token_stack.append(node)
 
     return token_stack[0]
@@ -62,20 +52,17 @@ def simp_neg(node):
     if node == None:
         return
     elif node.token == "~":
-        node.left = Node("-1")
+        node.children[0] = Node("-1")
         node.token = "*"
     elif node.token == "-":
         node.token = "+"
-        temp = node.right
-        node.right = Node("*")
-        node.right.left = Node("-1")
-        node.right.right = temp
-
-    simp_neg(node.left)
-    simp_neg(node.right)
-    return
-
-        
+        temp = node.children[1]
+        node.children[1] = Node("*")
+        node.children[1].children.append(Node("-1"))
+        node.children[1].children.append(temp)
+    for child in node.children:
+        simp_neg(child)
+    return 
 
 tokens = expression_tokenizer("-sin(x) + 1 - 2 * tan(pi * x)")
 print(tokens)
@@ -84,8 +71,9 @@ postfix_expression = infix_to_postfix_expression(tokens)
 print(postfix_expression)
 print()
 tree = expression_to_tree(postfix_expression)
+# tree.post_order()
 simp_neg(tree)
-tree.in_order()
+tree.pre_order()
 
     
 
