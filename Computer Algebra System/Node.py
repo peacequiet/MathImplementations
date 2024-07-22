@@ -33,7 +33,7 @@ class Node:
     
 
 # transforms expression into tree
-# going to move to new file
+# going to move to new file (?)
 def expression_to_tree(expression):
     token_stack = []
     for token in expression:
@@ -56,6 +56,7 @@ def expression_to_tree(expression):
 
     return token_stack[0]
 
+# transforms neg and sub into mul by -1
 def simp_neg(node):
     if node == None:
         return
@@ -71,6 +72,7 @@ def simp_neg(node):
 
     simp_neg(node.left)
     simp_neg(node.right)
+    return
 
         
 
