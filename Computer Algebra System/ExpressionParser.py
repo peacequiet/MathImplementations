@@ -1,6 +1,6 @@
 # Tokenizes the expression into numbers, operators, functions, and parentheses
 
-# TODO: negative nums
+# TODO: numbers longer than 1 char
 def expression_tokenizer(expression):
     expression_tokens = []
     i = 0
@@ -44,7 +44,7 @@ def expr_encoding(token):
     elif token in "+-*/^~":
         return "op"
     else:
-        return None
+        raise Exception("Unknown symbol: " + token)
 
 # Encodes the operators into precedence levels
 def operator_encoding(token):
@@ -90,3 +90,15 @@ def infix_to_postfix_expression(expression):
 # postfix_expression = infix_to_postfix_expression(tokens)
 # print(tokens)
 # print(postfix_expression)
+
+
+def parens_error_catcher(tokens):
+    lp_num = tokens.count("(")
+    rp_num = tokens.count(")")
+    if (lp_num + rp_num) % 2 != 0:
+        raise Exception("Sorry, your expression has mismatched parentheses.")
+
+tokens = expression_tokenizer("` + 2")
+postfix_expression = infix_to_postfix_expression(tokens)
+parens_error_catcher(tokens)
+print(tokens)
