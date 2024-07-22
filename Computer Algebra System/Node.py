@@ -154,7 +154,7 @@ def simp_dvd_logic(node, index):
 
 def simp_fold_constants(node):
     sum = 0
-    if node == "+":
+    if node.token == "+":
         i = 0
         while i < len(node.children):
             child = node.children[i]
@@ -163,15 +163,18 @@ def simp_fold_constants(node):
                 node.children.pop(i)
             else:
                 i += 1
+    if not node.children:
+        node.token = "" + str(sum)
+    else:
+        sum_node = Node("" + str(sum))
+        node.children.append(sum_node)
     
-
-# TODO: Folding constants simp
 # TODO: Canonical order simp
 # TODO: Evaluate/full simp
 # TODO: Advanced operations
 
 # tokens = expression_tokenizer("-sin(x) * 1 * 20 * tan(pi * x)")
-tokens = expression_tokenizer("2 + 2 + 2")
+tokens = expression_tokenizer("2 + 2 + 2 + 2 * 3")
 print(tokens)
 print()
 postfix_expression = infix_to_postfix_expression(tokens)
@@ -180,8 +183,9 @@ print()
 tree = expression_to_tree(postfix_expression)
 simp_neg(tree)
 simp_level_operators(tree)
-# # simp_like_terms(tree)
+simp_like_terms(tree)
 simp_dvd(tree)
+simp_fold_constants(tree)
 tree.post_order()
 
     
