@@ -1,4 +1,6 @@
 from ExpressionParser import *
+import math
+from Helper import *
 # TODO: algorithm(s) for simplifying expression trees - 40% complete
 # TODO: GUI - 0% complete
 # TODO: unit tests - 0% complete
@@ -30,7 +32,7 @@ class Node:
 def expression_to_tree(expression):
     token_stack = []
     for token in expression:
-        if expr_encoding(token) == "num":
+        if expr_encoding(token) == "num" or expr_encoding(token) == "var":
             node = Node(token)
             token_stack.append(node)
         elif expr_encoding(token) == "func":
@@ -126,6 +128,7 @@ def simp_dvd(node):
 
     return
 
+# special case of simp_dvd
 def simp_mul_dvd_logic(node):
     node_a = node.children[0]
     node_b = node.children[1].children[0]
@@ -140,6 +143,7 @@ def simp_mul_dvd_logic(node):
     node.append(node_c)
     node.token = "/"
 
+# logic for simp_Dvd
 def simp_dvd_logic(node, index):
     div_child_of_node = node.children[index]
     other_child_of_node = node.children[1-index]
@@ -152,6 +156,7 @@ def simp_dvd_logic(node, index):
                                   other_child_of_node if index == 0 else left_child_of_div]
     div_child_of_node.token = "*"
 
+# simplifies addition nodes
 def simp_fold_add(node):
     sum = 0
     for child in node.children:
@@ -160,8 +165,14 @@ def simp_fold_add(node):
         i = 0
         while i < len(node.children):
             child = node.children[i]
-            if expr_encoding(child.token) == "num":
-                sum += int(child.token)
+            if child.token == "pi":
+                sum += math.pi
+                node.children.pop(i)
+            elif child.token == "e":
+                sum += math.e
+                node.children.pop(i)
+            elif expr_encoding(child.token) == "num" :
+                sum += float(child.token)
                 node.children.pop(i)
             else:
                 i += 1
@@ -171,6 +182,7 @@ def simp_fold_add(node):
             sum_node = Node("" + str(sum))
             node.children.append(sum_node)
 
+# simplifies multiplication nodes
 def simp_fold_mul(node):
     mul = 1
     for child in node.children:
@@ -182,8 +194,14 @@ def simp_fold_mul(node):
             if child.token == "0":
                 mul = 0
                 node.children.clear()
-            elif expr_encoding(child.token) == "num":
-                mul *= int(child.token)
+            elif child.token == "pi":
+                mul *= math.pi
+                node.children.pop(i)
+            elif child.token == "e":
+                mul *= math.e
+                node.children.pop(i)
+            elif expr_encoding(child.token) == "num": 
+                mul *= float(child.token)
                 node.children.pop(i)
             else:
                 i += 1
@@ -193,6 +211,7 @@ def simp_fold_mul(node):
             mul_node = Node("" + str(mul))
             node.children.append(mul_node)
 
+# simplifies power nodes
 def simp_fold_pow(node):
     for child in node.children:
         simp_fold_pow(child)
@@ -200,28 +219,42 @@ def simp_fold_pow(node):
         if (node.children[0].token == "0" and node.children[1].token == "0"):
             raise Exception("Sorry, the expression 0 ^ 0 is undefined.")
         else:
-            node.token = "" + str(int(node.children[0].token) ** int(node.children[1].token))
+            node.token = "" + str(float(node.children[0].token) ** float(node.children[1].token))
             node.children.clear()
 
+def simp_fold(node, changes):
+    # record each change 
+    # iterate until there are no changes
+    return
+
+def simp_canonical_order(node):
+    for child in node.children:
+        simp_canonical_order(child)
+    if node.token == "+" or node.token == "*":
+        node.children = merge_sort(node.children)
+    return
+# TODO: simp_fold function that iterates
 # TODO: Canonical order simp
 # TODO: Evaluate/full simp
 # TODO: Advanced operations
 
 # tokens = expression_tokenizer("-sin(x) * 1 * 20 * tan(pi * x)")
-tokens = expression_tokenizer("(3 * 4) * (2 ^ 0)")
+# tokens = expression_tokenizer("(x * 4) * (2 ^ 2) = x")
+tokens = expression_tokenizer("(x * 4 * sin(x) * v) ")
 print(tokens)
 print()
 postfix_expression = infix_to_postfix_expression(tokens)
 print(postfix_expression)
 print()
 tree = expression_to_tree(postfix_expression)
-simp_neg(tree)
-simp_level_operators(tree)
-simp_like_terms(tree)
-simp_fold_pow(tree)
-simp_dvd(tree)
-simp_fold_mul(tree)
-simp_fold_add(tree)
+# simp_neg(tree)
+# simp_level_operators(tree)
+# simp_like_terms(tree)
+# simp_fold_pow(tree)
+# simp_dvd(tree)
+# simp_fold_mul(tree)
+# simp_fold_add(tree)
+simp_canonical_order(tree)
 tree.post_order()
 
     

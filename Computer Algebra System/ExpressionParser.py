@@ -1,6 +1,4 @@
 # Tokenizes the expression into numbers, operators, functions, and parentheses
-
-# TODO: numbers longer than 1 char
 def expression_tokenizer(expression):
     expression_tokens = []
     i = 0
@@ -38,21 +36,26 @@ def scan_for_digits(i, j, length, expression, expression_tokens):
     return (i + j)
 
 # Encodes the expression tokens into categories
+# TODO: special encoding for variables
 def expr_encoding(token):
     if token in ("sin", "cos", "tan"):
         return "func"
     elif token == "pi":
         return "num"
-    elif token[0].isalnum():
+    elif token == "e":
+        return "num"
+    elif token[0].isnumeric():
         return "num"
     elif len(token) >= 2 and token[0] == "-":
         if token[1].isnumeric():
             return "num"
+    elif token.isalpha():
+        return "var"
     elif token == "(":
         return "lp"
     elif token == ")":
         return "rp"
-    elif token in "+-*/^~":
+    elif token in "+-*/^~=":
         return "op"
     else:
         raise Exception("Unknown symbol: " + token)
@@ -77,6 +80,8 @@ def infix_to_postfix_expression(expression):
     for token in expression:
         token_type = expr_encoding(token)
         if token_type == "num":
+            postfix_list.append(token)
+        if token_type == "var":
             postfix_list.append(token)
         elif token_type == "func":
             op_stack.append(token)
