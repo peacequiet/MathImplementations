@@ -197,16 +197,18 @@ def simp_fold_pow(node):
     for child in node.children:
         simp_fold_pow(child)
     if node.token == "^":
-        node.token = "" + str(int(node.children[0].token) ** int(node.children[1].token))
-        node.children.clear()
+        if (node.children[0].token == "0" and node.children[1].token == "0"):
+            raise Exception("Sorry, the expression 0 ^ 0 is undefined.")
+        else:
+            node.token = "" + str(int(node.children[0].token) ** int(node.children[1].token))
+            node.children.clear()
 
-# TODO: Folding powers
 # TODO: Canonical order simp
 # TODO: Evaluate/full simp
 # TODO: Advanced operations
 
 # tokens = expression_tokenizer("-sin(x) * 1 * 20 * tan(pi * x)")
-tokens = expression_tokenizer("(3 * 4) * (-2 ^ 2)")
+tokens = expression_tokenizer("(3 * 4) * (2 ^ 0)")
 print(tokens)
 print()
 postfix_expression = infix_to_postfix_expression(tokens)
