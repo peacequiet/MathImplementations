@@ -251,7 +251,7 @@ def simp_canonical_order(node):
 
 # tokens = expression_tokenizer("-sin(x) * 1 * 20 * tan(pi * x)")
 # tokens = expression_tokenizer("(x * 4) * (2 ^ 2) = x")
-tokens = expression_tokenizer("(x ^ 4) * (2 ^ 2)")
+tokens = expression_tokenizer("(x ^ 4) / (2 ^ 2) / 4 * 6")
 print(tokens)
 print()
 postfix_expression = infix_to_postfix_expression(tokens)
