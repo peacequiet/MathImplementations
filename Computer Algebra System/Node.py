@@ -72,7 +72,8 @@ def simp_neg(node):
         node.children[1].children.append(Node("-1"))
         node.children[1].children.append(temp)
     for child in node.children:
-        simp_neg(child)
+        if child is not None:
+            simp_neg(child)
 
     return
 
@@ -105,12 +106,16 @@ def simp_like_terms(node):
             if child1.token == "^":
                 for j, child2 in enumerate(node.children):
                     if i != j and child2.token == "^" and child2.children[0].token == child1.children[0].token: 
-                        node.children.pop(j)        # pops child 2
-                        temp = node.children[i].children[1]
-                        node.children[i].children[1] = Node("+")
-                        node.children[i].children[1].children.append(temp)
-                        node.children[i].children[1].children.append(child2)
+                        simp_like_terms_logic(node, i, j, child2)
 
+    return
+
+def simp_like_terms_logic(node, i, j, child2):
+    node.children.pop(j)        # pops child 2
+    temp = node.children[i].children[1]
+    node.children[i].children[1] = Node("+")
+    node.children[i].children[1].children.append(temp)
+    node.children[i].children[1].children.append(child2)
     return
 
 # turns division into mul expressions
@@ -124,7 +129,8 @@ def simp_dvd(node):
         if node.children[1].token == "/":
             simp_mul_dvd_logic(node)
     for child in node.children:
-        simp_dvd(child)
+        if child is not None:
+            simp_dvd(child)
 
     return
 
@@ -143,7 +149,7 @@ def simp_mul_dvd_logic(node):
     node.append(node_c)
     node.token = "/"
 
-# logic for simp_Dvd
+# main logic for simp_Dvd
 def simp_dvd_logic(node, index):
     div_child_of_node = node.children[index]
     other_child_of_node = node.children[1-index]
@@ -160,7 +166,8 @@ def simp_dvd_logic(node, index):
 def simp_fold_add(node):
     sum = 0
     for child in node.children:
-        simp_fold_add(child)
+        if child is not None:
+            simp_fold_add(child)
     if node.token == "+":
         i = 0
         while i < len(node.children):
@@ -186,7 +193,8 @@ def simp_fold_add(node):
 def simp_fold_mul(node):
     mul = 1
     for child in node.children:
-        simp_fold_mul(child)
+        if child is not None:
+            simp_fold_mul(child)
     if node.token == "*":
         i = 0
         while i < len(node.children):
@@ -207,15 +215,16 @@ def simp_fold_mul(node):
                 i += 1
         if not node.children:
             node.token = "" + str(mul)
-        else:
+        elif mul != 1:
             mul_node = Node("" + str(mul))
             node.children.append(mul_node)
 
 # simplifies power nodes
 def simp_fold_pow(node):
     for child in node.children:
-        simp_fold_pow(child)
-    if node.token == "^":
+        if child is not None:
+            simp_fold_pow(child)
+    if node.token == "^" and expr_encoding(node.children[0].token) != "var":
         if (node.children[0].token == "0" and node.children[1].token == "0"):
             raise Exception("Sorry, the expression 0 ^ 0 is undefined.")
         else:
@@ -228,10 +237,12 @@ def simp_fold(node, changes):
     return
 
 def simp_canonical_order(node):
-    for child in node.children:
-        simp_canonical_order(child)
+    node.children = sorted(node.children, key=lambda child: child.token[0])
     if node.token == "+" or node.token == "*":
         node.children = merge_sort(node.children)
+    for child in node.children:
+        if child is not None:
+            simp_canonical_order(child)
     return
 # TODO: simp_fold function that iterates
 # TODO: Canonical order simp
@@ -240,20 +251,20 @@ def simp_canonical_order(node):
 
 # tokens = expression_tokenizer("-sin(x) * 1 * 20 * tan(pi * x)")
 # tokens = expression_tokenizer("(x * 4) * (2 ^ 2) = x")
-tokens = expression_tokenizer("(x * 4 * sin(x) * v) ")
+tokens = expression_tokenizer("(x ^ 4) * (2 ^ 2)")
 print(tokens)
 print()
 postfix_expression = infix_to_postfix_expression(tokens)
 print(postfix_expression)
 print()
 tree = expression_to_tree(postfix_expression)
-# simp_neg(tree)
-# simp_level_operators(tree)
-# simp_like_terms(tree)
-# simp_fold_pow(tree)
-# simp_dvd(tree)
-# simp_fold_mul(tree)
-# simp_fold_add(tree)
+simp_neg(tree)
+simp_level_operators(tree)
+simp_like_terms(tree)
+simp_dvd(tree)
+simp_fold_pow(tree)
+simp_fold_mul(tree)
+simp_fold_add(tree)
 simp_canonical_order(tree)
 tree.post_order()
 

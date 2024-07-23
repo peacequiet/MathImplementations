@@ -45,4 +45,6 @@ def merge(left, right):
     
     return result
 
+# print(sorted(numbers))
+
 # TODO: merge sort for alphabetical and numeric ordering
