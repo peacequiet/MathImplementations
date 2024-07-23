@@ -1,11 +1,11 @@
 from ExpressionParser import *
 import math
 from Helper import *
-# TODO: algorithm(s) for simplifying expression trees - 40% complete
-# TODO: GUI - 0% complete
-# TODO: unit tests - 0% complete
-# TODO: cleanup, separation of concerns - 10% complete
-# TODO: try-except - partially complete
+# TODO: algorithm(s) for simplifying expression trees   - 90% complete
+# TODO: GUI                                             - 0% complete
+# TODO: unit tests                                      - 10% complete
+# TODO: cleanup, separation of concerns                 - 10% complete
+# TODO: try-except                                      - 100% complete for the moment
 
 class Node:
     def __init__(self, token):
@@ -244,9 +244,9 @@ def simp_canonical_order(node):
         if child is not None:
             simp_canonical_order(child)
     return
+
 # TODO: simp_fold function that iterates
-# TODO: Canonical order simp
-# TODO: Evaluate/full simp
+# TODO: Evaluate/full simp - built into simp_fold iterations
 # TODO: Advanced operations
 
 # tokens = expression_tokenizer("-sin(x) * 1 * 20 * tan(pi * x)")
