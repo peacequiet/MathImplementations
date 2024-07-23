@@ -152,8 +152,10 @@ def simp_dvd_logic(node, index):
                                   other_child_of_node if index == 0 else left_child_of_div]
     div_child_of_node.token = "*"
 
-def simp_fold_constants(node):
+def simp_fold_add(node):
     sum = 0
+    for child in node.children:
+        simp_fold_add(child)
     if node.token == "+":
         i = 0
         while i < len(node.children):
@@ -163,18 +165,41 @@ def simp_fold_constants(node):
                 node.children.pop(i)
             else:
                 i += 1
-    if not node.children:
-        node.token = "" + str(sum)
-    else:
-        sum_node = Node("" + str(sum))
-        node.children.append(sum_node)
-    
+        if not node.children:
+            node.token = "" + str(sum)
+        else:
+            sum_node = Node("" + str(sum))
+            node.children.append(sum_node)
+
+def simp_fold_mul(node):
+    mul = 1
+    for child in node.children:
+        simp_fold_mul(child)
+    if node.token == "*":
+        i = 0
+        while i < len(node.children):
+            child = node.children[i]
+            if child.token == "0":
+                mul = 0
+                node.children.clear()
+            elif expr_encoding(child.token) == "num":
+                mul *= int(child.token)
+                node.children.pop(i)
+            else:
+                i += 1
+        if not node.children:
+            node.token = "" + str(mul)
+        else:
+            mul_node = Node("" + str(mul))
+            node.children.append(mul_node)
+
+# TODO: Folding powers
 # TODO: Canonical order simp
 # TODO: Evaluate/full simp
 # TODO: Advanced operations
 
 # tokens = expression_tokenizer("-sin(x) * 1 * 20 * tan(pi * x)")
-tokens = expression_tokenizer("2 + 2 + 2 + 2 * 3")
+tokens = expression_tokenizer("2 + 2 + -2 + 2 * (-2 + 2) * 8")
 print(tokens)
 print()
 postfix_expression = infix_to_postfix_expression(tokens)
@@ -185,7 +210,8 @@ simp_neg(tree)
 simp_level_operators(tree)
 simp_like_terms(tree)
 simp_dvd(tree)
-simp_fold_constants(tree)
+simp_fold_mul(tree)
+simp_fold_add(tree)
 tree.post_order()
 
     

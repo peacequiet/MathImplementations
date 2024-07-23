@@ -11,16 +11,16 @@ def expression_tokenizer(expression):
             expression_tokens.append(expression[i:i+3])
             i += 3
         elif (expression[i] == "-" 
+              and expression[i+1].isnumeric()
+              and not expression[i-1].isalnum()):
+            i = scan_for_digits(i, 1, length, expression, expression_tokens)
+        elif (expression[i] == "-" 
               and (expression[i-1] in "+-*/^(" or i == 0)):
             expression_tokens.append("~")                               # replace unary negation with squiggly operator
             i += 1 
         elif expression[i:i+2] == "pi":
             expression_tokens.append("pi")
             i += 2
-        elif (expression[i] == "-" 
-              and expression[i+1].isnumeric()
-              and not expression[i-1].isalnum()):
-            i = scan_for_digits(i, 1, length, expression, expression_tokens)
         elif expression[i].isnumeric():
             i = scan_for_digits(i, 0, length, expression, expression_tokens)
         elif expression[i] == " ":
@@ -63,9 +63,9 @@ def operator_encoding(token):
         return 4
     elif token == "^":
         return 3
-    elif token in "*/":
+    elif token in "*/~":
         return 2
-    elif token in "+-~":
+    elif token in "+-":
         return 1
     else:
         return 0
