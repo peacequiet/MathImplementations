@@ -193,13 +193,20 @@ def simp_fold_mul(node):
             mul_node = Node("" + str(mul))
             node.children.append(mul_node)
 
+def simp_fold_pow(node):
+    for child in node.children:
+        simp_fold_pow(child)
+    if node.token == "^":
+        node.token = "" + str(int(node.children[0].token) ** int(node.children[1].token))
+        node.children.clear()
+
 # TODO: Folding powers
 # TODO: Canonical order simp
 # TODO: Evaluate/full simp
 # TODO: Advanced operations
 
 # tokens = expression_tokenizer("-sin(x) * 1 * 20 * tan(pi * x)")
-tokens = expression_tokenizer("2 + 2 + -2 + 2 * (-2 + 2) * 8")
+tokens = expression_tokenizer("(3 * 4) * (-2 ^ 2)")
 print(tokens)
 print()
 postfix_expression = infix_to_postfix_expression(tokens)
@@ -209,6 +216,7 @@ tree = expression_to_tree(postfix_expression)
 simp_neg(tree)
 simp_level_operators(tree)
 simp_like_terms(tree)
+simp_fold_pow(tree)
 simp_dvd(tree)
 simp_fold_mul(tree)
 simp_fold_add(tree)
