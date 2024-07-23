@@ -27,6 +27,7 @@ def merge_sort(array):
 
     return merge(left, right)
 
+# merge sort logic
 def merge(left, right):
     result = []
 
