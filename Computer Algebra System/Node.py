@@ -179,30 +179,34 @@ def simp_dvd_logic(node, index):
                                   else left_child_of_div]
     div_child_of_node.token = "*"
 
-# simplifies addition nodes
+def fold_add_logic(node, changes):
+    sum = 0
+    i = 0
+    while i < len(node.children):
+        child = node.children[i]
+        if child.token == "pi":
+            sum += math.pi
+            node.children.pop(i)
+            changes += 1
+        elif child.token == "e":
+            sum += math.e
+            node.children.pop(i)
+            changes += 1
+        elif expr_encoding(child.token) == "num":
+            sum += float(child.token)
+            node.children.pop(i)
+            changes += 1
+        else:
+            i += 1
+    return sum, changes
+
 def simp_fold_add(node, changes):
     sum = 0
     for child in node.children:
         if child is not None:
             changes += simp_fold_add(child, 0)
-    if node.token == "+":           
-        i = 0                           # make into separate method
-        while i < len(node.children):
-            child = node.children[i]
-            if child.token == "pi":
-                sum += math.pi
-                node.children.pop(i)
-                changes += 1
-            elif child.token == "e":
-                sum += math.e
-                node.children.pop(i)
-                changes += 1
-            elif expr_encoding(child.token) == "num" :
-                sum += float(child.token)
-                node.children.pop(i)
-                changes += 1
-            else:
-                i += 1
+    if node.token == "+":
+        sum, changes = fold_add_logic(node, changes)
         if not node.children:
             node.token = "" + str(sum)
         elif changes > 0:
@@ -210,46 +214,6 @@ def simp_fold_add(node, changes):
             node.children.append(sum_node)
 
     return changes
-
-# simplifies multiplication nodes
-# def simp_fold_mul(node, changes):
-#     mul = 1
-#     for child in node.children:
-#         if child is not None:
-#             changes += simp_fold_mul(child, 0)
-#     if node.token == "*":
-#         i = 0                                   # split into helper function
-#         while i < len(node.children):           # this algorithm determines how to fold multiplications
-#             child = node.children[i]
-#             if child.token == "0":
-#                 mul = 0
-#                 node.children.clear()
-#                 changes += 1
-#             elif child.token == "pi":
-#                 mul *= math.pi
-#                 node.children.pop(i)
-#                 changes += 1
-#             elif child.token == "e":
-#                 mul *= math.e
-#                 node.children.pop(i)
-#                 changes += 1
-#             elif (expr_encoding(child.token) == "num" 
-#                     and len(node.children) > 1 
-#                     and ((expr_encoding(node.children[1].token) != "var" 
-#                     and expr_encoding(node.children[0].token) == "num") 
-#                     or mul != 1)): 
-#                 mul *= float(child.token)
-#                 node.children.pop(i)
-#                 changes += 1
-#             else:
-#                 i += 1
-#         if not node.children:
-#             node.token = "" + str(mul)
-#         elif mul != 1:
-#             mul_node = Node("" + str(mul))
-#             node.children.append(mul_node)
-
-#     return changes
 
 # refactored
 def simp_fold_mul(node, changes):
@@ -284,8 +248,8 @@ def fold_mul_logic(node, changes, mul):
             node.children.pop(i)
             changes += 1
         elif (expr_encoding(child.token) == "num" 
-                and len(node.children) > 1 
-                and ((expr_encoding(node.children[1].token) != "var" 
+                and ((len(node.children) > 1 
+                and expr_encoding(node.children[1].token) != "var" 
                 and expr_encoding(node.children[0].token) == "num") 
                 or mul != 1)): 
             mul *= float(child.token)
@@ -310,23 +274,6 @@ def simp_fold_pow(node, changes):
 
     return changes
 
-def simp_fold(node):
-    start = True
-    while start:
-        changes = 0
-        changes += simp_neg(tree, 0)
-        changes += simp_level_operators(tree, 0)
-        changes += simp_like_terms(tree, 0)
-        changes += simp_dvd(tree, 0)
-        changes += simp_fold_pow(tree, 0)
-        changes += simp_fold_mul(tree, 0)
-        changes += simp_fold_add(tree, 0)
-        simp_canonical_order(tree)
-        if changes == 0:
-            start = False
-    simp_canonical_order(tree)
-    return
-
 def simp_canonical_order(node):
     node.children = sorted(node.children, key=lambda child: child.token[0])
     if node.token == "+" or node.token == "*":
@@ -337,13 +284,31 @@ def simp_canonical_order(node):
 
     return
 
-# TODO: simp_fold function that iterates
+def simp_fold(node):
+    start = True
+    while start:
+        changes = 0
+        changes += simp_neg(node, 0)
+        changes += simp_level_operators(node, 0)
+        changes += simp_like_terms(node, 0)
+        changes += simp_dvd(node, 0)
+        changes += simp_fold_pow(node, 0)
+        changes += simp_fold_mul(node, 0)
+        changes += simp_fold_add(node, 0)
+        simp_canonical_order(node)
+        if changes == 0:
+            start = False
+    simp_canonical_order(node)
+    return
+
+# TODO: simp_fold function that iterates - 60% complete (needs testing)
+# TODO: fold divisions and trigonometric functions
 # TODO: Evaluate/full simp - built into simp_fold iterations
 # TODO: Advanced operations
 
 # tokens = expression_tokenizer("-sin(x) * 1 * 20 * tan(pi * x)")
 # tokens = expression_tokenizer("(x * 4) * (2 ^ 2) = x")
-tokens = expression_tokenizer("-x + -v * 2 * 2 * 3")
+tokens = expression_tokenizer("sin((2 + 4) * (2 + 6)) = x")
 print(tokens)
 print()
 postfix_expression = infix_to_postfix_expression(tokens)
