@@ -63,13 +63,14 @@ def simp_neg(node, changes):
 
 # simplifies addition operators, merges them and sends their children to a single node
 def simp_level_operators(node, changes):
-    if node.token == "+":
-        changes += level_operators_logic(node, 0)
-    if node.token == "*":
+    if node.token == "+*":           # combine these lines?
         changes += level_operators_logic(node, 0)
     for child in node.children:
         changes += simp_level_operators(child, 0)
-
+    
+    if node.token in "+*" and len(node.children) == 1:
+        node.token = node.children[0].token
+        node.children.clear()
     return changes
 
 def level_operators_logic(node, changes):
@@ -205,7 +206,7 @@ def simp_fold_mul(node, changes):
             changes += simp_fold_mul(child, 0)
     if node.token == "*":
         changes, mul = fold_mul_logic(node, changes, mul)
-        if not node.children:
+        if not node.children:                       
             node.token = "" + str(mul)
         elif mul != 1:
             mul_node = Node("" + str(mul))
@@ -217,7 +218,7 @@ def fold_mul_logic(node, changes, mul):
     i = 0
     while i < len(node.children):
         child = node.children[i]
-        if child.token == "0":
+        if child.token == "0" or child.token == "0.0":
             mul = 0
             node.children.clear()
             changes += 1
@@ -266,6 +267,7 @@ def simp_canonical_order(node):
 
     return
 
+# simplifies and folds trigs
 def simp_fold_trig(node, changes):
     for child in node.children:
         if child is not None:
@@ -285,6 +287,59 @@ def trig_funcs(token, value):
     elif token == "tan":
         return math.tan(value)
 
+def fold_dvd(node, changes, div):
+    i = 0
+    while i < len(node.children):
+        child = node.children[i]
+        if child.token == "0" or child.token == "0.0":
+            raise Exception("Division by zero error.")
+        elif child.token in ["pi", "e"]:
+            div = div_helper(div, child.token)
+            node.children.pop(i)
+            changes += 1
+        elif (expr_encoding(child.token) == "num" 
+                and ((len(node.children) > 1 
+                and expr_encoding(node.children[1].token) != "var" 
+                and expr_encoding(node.children[0].token) == "num") 
+                or div != 1)):
+            div = div_helper(div, child.token)
+            node.children.pop(i)
+            changes += 1
+        else:
+            i += 1
+    return changes, div
+
+def simp_fold_dvd(node, changes):
+    div = 1
+    for child in node.children:
+        if child is not None:
+            changes += simp_fold_dvd(child, 0)
+    if node.token == "/":
+        changes, div = fold_dvd(node, changes, div)
+        if not node.children:
+            node.token = "" + str(div)
+        else:
+            div_node = Node("" + str(div))
+            node.children.append(div_node)
+    return changes
+
+def div_helper(div, token):
+    if div == 1:
+        if token == "pi":
+            div = math.pi
+        elif token == "e":
+            div = math.e
+        else:
+            div = float(token)
+    else:
+        if token == "pi":
+            div /= math.pi
+        elif token == "e":
+            div /= math.e
+        else:
+            div /= float(token)
+    return div
+
 # performs all simp operations
 def simp_fold(node):
     start = True
@@ -298,6 +353,7 @@ def simp_fold(node):
         changes += simp_fold_mul(node, 0)
         changes += simp_fold_add(node, 0)
         changes += simp_fold_trig(node, 0)
+        changes += simp_fold_dvd(node, 0)
         simp_canonical_order(node)
         if changes == 0:
             start = False
@@ -317,7 +373,7 @@ def simp_fold(node):
 # print(postfix_expression)
 # print()
 # tree = expression_to_tree(postfix_expression)
-tree = expression_to_tree(expression_parser("sin(2 + 2 * 8) = x"))
+tree = expression_to_tree(expression_parser("sin(2 / 2 * 8 * 3)"))
 # print(simp_neg(tree, 0))
 # print(simp_level_operators(tree, 0))
 # print(simp_like_terms(tree, 0))
