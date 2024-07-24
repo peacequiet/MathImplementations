@@ -306,7 +306,6 @@ def simp_fold(node):
 
 # TODO: simp_fold function that iterates - 60% complete (needs testing)
 # TODO: fold divisions
-# TODO: Evaluate/full simp - built into simp_fold iterations
 # TODO: Advanced operations
 
 # tokens = expression_tokenizer("-sin(x) * 1 * 20 * tan(pi * x)")
@@ -318,7 +317,7 @@ def simp_fold(node):
 # print(postfix_expression)
 # print()
 # tree = expression_to_tree(postfix_expression)
-tree = expression_to_tree(expression_parser("sin(x) = x"))
+tree = expression_to_tree(expression_parser("sin(2 + 2 * 8) = x"))
 # print(simp_neg(tree, 0))
 # print(simp_level_operators(tree, 0))
 # print(simp_like_terms(tree, 0))
