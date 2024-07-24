@@ -199,7 +199,7 @@ def fold_add_logic(node, changes):
             i += 1
     return sum, changes
 
-# refactored
+# fold muls logic
 def simp_fold_mul(node, changes):
     mul = 1
     for child in node.children:
@@ -258,6 +258,7 @@ def simp_fold_pow(node, changes):
 
     return changes
 
+# gives expressions a regular order
 def simp_canonical_order(node):
     node.children = sorted(node.children, key=lambda child: child.token[0])
     if node.token == "+" or node.token == "*":
@@ -288,6 +289,21 @@ def trig_funcs(token, value):
     elif token == "tan":
         return math.tan(value)
 
+# fold divisions 
+def simp_fold_dvd(node, changes):
+    div = 1
+    for child in node.children:
+        if child is not None:
+            changes += simp_fold_dvd(child, 0)
+    if node.token == "/":
+        changes, div = fold_dvd(node, changes, div)
+        if not node.children:
+            node.token = "" + str(div)
+        else:
+            div_node = Node("" + str(div))
+            node.children.append(div_node)
+    return changes
+
 def fold_dvd(node, changes, div):
     i = 0
     while i < len(node.children):
@@ -309,20 +325,6 @@ def fold_dvd(node, changes, div):
         else:
             i += 1
     return changes, div
-
-def simp_fold_dvd(node, changes):
-    div = 1
-    for child in node.children:
-        if child is not None:
-            changes += simp_fold_dvd(child, 0)
-    if node.token == "/":
-        changes, div = fold_dvd(node, changes, div)
-        if not node.children:
-            node.token = "" + str(div)
-        else:
-            div_node = Node("" + str(div))
-            node.children.append(div_node)
-    return changes
 
 def div_helper(div, token):
     if div == 1:
@@ -364,24 +366,7 @@ def simp_fold(node):
 # TODO: simp_fold function that iterates - 90% complete (needs testing)
 # TODO: Advanced operations
 
-# tokens = expression_tokenizer("-sin(x) * 1 * 20 * tan(pi * x)")
-# tokens = expression_tokenizer("(x * 4) * (2 ^ 2) = x")
-# tokens = expression_tokenizer("sin(x) = x")
-# print(tokens)
-# print()
-# postfix_expression = infix_to_postfix_expression(tokens)
-# print(postfix_expression)
-# print()
-# tree = expression_to_tree(postfix_expression)
 tree = expression_to_tree(expression_parser("a + b = b + a"))
-# print(simp_neg(tree, 0))
-# print(simp_level_operators(tree, 0))
-# print(simp_like_terms(tree, 0))
-# print(simp_dvd(tree, 0))
-# print(simp_fold_pow(tree, 0))
-# print(simp_fold_mul(tree, 0))
-# print(simp_fold_add(tree, 0))
-# simp_canonical_order(tree)
 simp_fold(tree)
 tree.post_order()
 
