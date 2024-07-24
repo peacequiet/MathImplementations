@@ -2,6 +2,7 @@ from ExpressionParser import *
 from Helper import *
 from Node import *
 import math
+import flask
 # TODO: algorithm(s) for simplifying expression trees   - 90% complete
 # TODO: GUI                                             - 0% complete
 # TODO: unit tests                                      - 10% complete
@@ -360,8 +361,7 @@ def simp_fold(node):
     simp_canonical_order(node)
     return
 
-# TODO: simp_fold function that iterates - 60% complete (needs testing)
-# TODO: fold divisions
+# TODO: simp_fold function that iterates - 90% complete (needs testing)
 # TODO: Advanced operations
 
 # tokens = expression_tokenizer("-sin(x) * 1 * 20 * tan(pi * x)")
@@ -373,7 +373,7 @@ def simp_fold(node):
 # print(postfix_expression)
 # print()
 # tree = expression_to_tree(postfix_expression)
-tree = expression_to_tree(expression_parser("sin(2 / 2 * 8 * 3)"))
+tree = expression_to_tree(expression_parser("a + b = b + a"))
 # print(simp_neg(tree, 0))
 # print(simp_level_operators(tree, 0))
 # print(simp_like_terms(tree, 0))
