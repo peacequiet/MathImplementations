@@ -179,6 +179,21 @@ def simp_dvd_logic(node, index):
                                   else left_child_of_div]
     div_child_of_node.token = "*"
 
+def simp_fold_add(node, changes):
+    sum = 0
+    for child in node.children:
+        if child is not None:
+            changes += simp_fold_add(child, 0)
+    if node.token == "+":
+        sum, changes = fold_add_logic(node, changes)
+        if not node.children:
+            node.token = "" + str(sum)
+        elif changes > 0:
+            sum_node = Node("" + str(sum))
+            node.children.append(sum_node)
+
+    return changes
+
 def fold_add_logic(node, changes):
     sum = 0
     i = 0
@@ -199,21 +214,6 @@ def fold_add_logic(node, changes):
         else:
             i += 1
     return sum, changes
-
-def simp_fold_add(node, changes):
-    sum = 0
-    for child in node.children:
-        if child is not None:
-            changes += simp_fold_add(child, 0)
-    if node.token == "+":
-        sum, changes = fold_add_logic(node, changes)
-        if not node.children:
-            node.token = "" + str(sum)
-        elif changes > 0:
-            sum_node = Node("" + str(sum))
-            node.children.append(sum_node)
-
-    return changes
 
 # refactored
 def simp_fold_mul(node, changes):
