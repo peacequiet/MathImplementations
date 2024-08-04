@@ -379,9 +379,9 @@ def user_input(string):
 
 
 
-tree = expression_to_tree(expression_parser("+ 3 + "))
-simp_fold(tree)
-tree.post_order()
+# tree = expression_to_tree(expression_parser("+ 3 + "))
+# simp_fold(tree)
+# tree.post_order()
 
     
 
