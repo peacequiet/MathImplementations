@@ -367,7 +367,7 @@ def simp_fold(node):
     return
 
 # TODO: User input
-def user_input(string):
+def user_input():
     expression = input("Please enter an expression: ")
     tree = expression_to_tree(expression_parser(expression))
     simp_fold(tree)
@@ -377,7 +377,7 @@ def user_input(string):
 # TODO: simp_fold function that iterates - 90% complete (needs testing)
 # TODO: Advanced operations
 
-
+user_input()
 
 # tree = expression_to_tree(expression_parser("+ 3 + "))
 # simp_fold(tree)

@@ -4,7 +4,7 @@ class Node:
         self.children = []
 
     def __str__(self):
-        return f"Node: {self.token}"
+        return f"Value: {self.token}"
     
     def post_order(node):
         for child in node.children:
