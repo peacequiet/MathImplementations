@@ -2,7 +2,6 @@ from ExpressionParser import *
 from Helper import *
 from Node import *
 import math
-import flask
 # TODO: algorithm(s) for simplifying expression trees   - 90% complete
 # TODO: GUI                                             - 0% complete
 # TODO: unit tests                                      - 10% complete
