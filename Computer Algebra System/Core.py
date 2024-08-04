@@ -7,8 +7,8 @@ import flask
 # TODO: GUI                                             - 0% complete
 # TODO: unit tests                                      - 10% complete
 # TODO: cleanup, separation of concerns                 - 10% complete
-# TODO: try-except                                      - 100% complete for the moment
-
+# TODO: try-except                                      - 80% complete 
+# TODO: IO
 # transforms expression into tree
 # going to move to new file (?)
 def expression_to_tree(expression):
@@ -172,7 +172,7 @@ def simp_fold_add(node, changes):
         sum, changes = fold_add_logic(node, changes)
         if not node.children:
             node.token = "" + str(sum)
-        elif changes > 0:
+        elif changes > 0 and sum != 0:
             sum_node = Node("" + str(sum))
             node.children.append(sum_node)
 
@@ -191,7 +191,11 @@ def fold_add_logic(node, changes):
             sum += math.e
             node.children.pop(i)
             changes += 1
-        elif expr_encoding(child.token) == "num":
+        elif (expr_encoding(child.token) == "num" 
+                and ((len(node.children) > 1 
+                and expr_encoding(node.children[1].token) != "var" 
+                and expr_encoding(node.children[0].token) == "num")
+                or sum != 0)):
             sum += float(child.token)
             node.children.pop(i)
             changes += 1
@@ -363,10 +367,17 @@ def simp_fold(node):
     simp_canonical_order(node)
     return
 
+# TODO: User input
+def user_input(string):
+    expression = input("Please enter an expression: ")
+    return
+
 # TODO: simp_fold function that iterates - 90% complete (needs testing)
 # TODO: Advanced operations
 
-tree = expression_to_tree(expression_parser("a + b = b + a"))
+
+
+tree = expression_to_tree(expression_parser("+ 3 + "))
 simp_fold(tree)
 tree.post_order()
 

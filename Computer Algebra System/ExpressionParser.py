@@ -104,16 +104,40 @@ def infix_to_postfix_expression(expression):
 # takes infix string expression, converts to postfix
 def expression_parser(expression):
     tokens = expression_tokenizer(expression)
-    parens_error_catcher(tokens)
+    parse_exceptions(tokens)
     postfix_expression = infix_to_postfix_expression(tokens)
     return postfix_expression
 
+# PARSE ERRORS
 #catches too many parentheses
 def parens_error_catcher(tokens):
     lp_num = tokens.count("(")
     rp_num = tokens.count(")")
     if (lp_num + rp_num) % 2 != 0:
-        raise Exception("Sorry, your expression has mismatched parentheses.")
+        raise Exception("PARSE ERROR: Expression has mismatched parentheses")
+
+def op_error_catcher(tokens, length):
+    if expr_encoding(tokens[0]) == "op" and tokens[0] != "~":
+         raise Exception("PARSE ERROR: Cannot start expression with binary operator")
+    for i, token in enumerate(tokens):
+        if (i < length - 1
+            and expr_encoding(token) == "op" 
+            and expr_encoding(tokens[i + 1]) == "op"):
+            raise Exception("PARSE ERROR: Neighboring operators at " + str(i) + ", " + str(i + 1))
+        
+def term_error_catcher(tokens, length):
+    for i, token in enumerate(tokens):
+        if (i < length - 1
+            and expr_encoding(token) in ["num", "var", "func"]
+            and expr_encoding(tokens[i + 1]) not in ["lp", "rp", "op"]):
+            raise Exception("PARSE ERROR: Neighboring terms at " + str(i) + ", " + str(i + 1))
+
+def parse_exceptions(tokens):
+    length = len(tokens)
+    parens_error_catcher(tokens)
+    op_error_catcher(tokens, length)
+    term_error_catcher(tokens, length)
+
 
 # examples
 #print(expression_parser("2 + 6 ^ 70"))
