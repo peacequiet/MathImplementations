@@ -2,12 +2,14 @@ from ExpressionParser import *
 from Helper import *
 from Node import *
 import math
-# TODO: algorithm(s) for simplifying expression trees   - 90% complete
+# TODO: algorithm(s) for simplifying expression trees   - 100% complete
 # TODO: GUI                                             - 0% complete
 # TODO: unit tests                                      - 10% complete
 # TODO: cleanup, separation of concerns                 - 10% complete
 # TODO: try-except                                      - 80% complete 
 # TODO: IO
+# TODO: Autodiff
+
 # transforms expression into tree
 # going to move to new file (?)
 def expression_to_tree(expression):
@@ -375,9 +377,10 @@ def user_input():
     return
 
 # TODO: simp_fold function that iterates - 90% complete (needs testing)
-# TODO: Advanced operations
+# TODO: Advanced operations (autodiff)
 
-user_input()
+# LAUNCH
+# user_input()
 
 # tree = expression_to_tree(expression_parser("+ 3 + "))
 # simp_fold(tree)
